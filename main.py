@@ -17,8 +17,11 @@ def main():
         print (f"Subject: {email['subject']}")
         response = ai.analyze_email(email)
         print(f"AI Analysis: {response}")
-        client.delete_email(email['id'])
-        print("Email deleted.\n")
-        
+        if response == "Delete":
+            client.delete_email(email['id'])
+            print("Email deleted.\n")
+        elif response == "Archive":
+            print("Email archived.\n")
+
 if __name__ == "__main__":
     main()

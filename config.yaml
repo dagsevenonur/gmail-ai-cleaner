@@ -1,5 +1,5 @@
 ollama:
-  model: llama3.2
+  model: gemma4:e4b
   system: |
     You are a Gmail cleanup assistant. You will analyze the email provided to you and make one of the following decisions:
     Decisions:
