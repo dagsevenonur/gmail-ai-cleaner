@@ -1,48 +1,32 @@
 import ollama
-
-txt = '''
-You are a Gmail cleanup assistant. You will analyze the email provided to you and make one of the following decisions:
-Decisions:
-
-DELETE — Unnecessary, spam, promotional, newsletters, old notifications
-ARCHIVE — Important but doesn’t need to stay in the inbox
-KEEP — Important; may need to be read or followed up on
-
-Choose KEEP if:
-
-It’s a personal email
-It’s related to work or a project
-It contains an invoice, contract, or legal document
-It includes reservation, ticket, or shipping tracking information
-It’s a notification from a bank or government agency
-
-Choose ARCHIVE if:
-
-It’s been read but no longer requires active follow-up
-It’s a receipt or confirmation of a past order
-It’s old project correspondence
-
-Decide to DELETE if:
-
-Promotions, discounts, advertisements
-Newsletters or bulk emails
-Social media notifications
-Unread general updates older than 6 months
-
-Your response format must be exactly as follows; do not write anything else:
-DECISION: DELETE|ARCHIVE|KEEP
-'''
+import yaml
 
 class AI:
     def __init__(self):
         self.model = 'llama3.2'
+
+    @staticmethod
+    def load_instructions(file_path):
+        try:
+            with open(file_path, 'r') as file:
+                instructions = yaml.safe_load(file)
+                ollama_config = instructions.get('ollama', {})
+                model = ollama_config.get('model', 'llama3.2')
+                system = ollama_config.get('system', '')
+                return model, system
+        except Exception as e:
+            print(f"Error loading instructions: {e}")
+            return ""
     
     def analyze_email(self, email):
         try:
+            model, system = self.load_instructions('config.yaml')
+            self.model = model
+            self.system = system
             response = ollama.chat(
                 model=self.model,
                 messages=[
-                    {'role': 'system', 'content': txt},
+                    {'role': 'system', 'content': self.system},
                     {'role': 'user', 'content': f"Subject: {email['subject']}\nFrom: {email['from']}\nDate: {email['date']}\n\n{email['snippet']}"}
                 ]
             )

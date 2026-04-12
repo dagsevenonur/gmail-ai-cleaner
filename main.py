@@ -1,5 +1,5 @@
 from client import GmailApi
-from model import AI
+from model import AI 
 
 def main():
     print("Welcome to the Gmail AI Cleaner!")
