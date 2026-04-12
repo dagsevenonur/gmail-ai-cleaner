@@ -23,17 +23,27 @@ class GmailApi:
             detail = self.service.users().messages().get(
                 userId="me", 
                 id=msg["id"],
-                format="metadata",
+                format="full",
                 metadataHeaders=["Subject", "From", "Date"]
             ).execute()
             
             headers = detail["payload"]["headers"]
-            email = {"id": msg["id"]}
+            snippet = detail["snippet"] 
+            email = {"id": msg["id"], "snippet": snippet}
             for header in headers:
                 email[header["name"].lower()] = header["value"]
             
             emails.append(email)
         return emails
+    
+    def delete_email(self, email_id):
+        try:
+            request = self.service.users().messages().trash(userId="me", id=email_id)
+            self._execute_request(request)
+            print(f"Email with ID {email_id} has been trashed.")
+        except HttpError as e:            
+            print(f"An error occurred while trashing email with ID {email_id}: {e}")
+        
 
     @staticmethod
     def _execute_request(request):

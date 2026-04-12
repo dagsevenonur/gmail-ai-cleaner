@@ -1,4 +1,5 @@
 from client import GmailApi
+from model import AI
 
 def main():
     print("Welcome to the Gmail AI Cleaner!")
@@ -11,8 +12,13 @@ def main():
     print(f"Found {len(emails)} emails in your inbox.")
     print("Analyzing emails with AI...")
     emails = emails[:10]  # Limit to first 10 emails for analysis
+    ai = AI()
     for email in emails:
-        print(email)
-
+        print (f"Subject: {email['subject']}")
+        response = ai.analyze_email(email)
+        print(f"AI Analysis: {response}")
+        client.delete_email(email['id'])
+        print("Email deleted.\n")
+        
 if __name__ == "__main__":
     main()
