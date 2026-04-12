@@ -3,7 +3,9 @@ import yaml
 
 class AI:
     def __init__(self):
-        self.model = 'llama3.2'
+        model, system = self.load_instructions('config.yaml')
+        self.model = model
+        self.system = system
 
     @staticmethod
     def load_instructions(file_path):
@@ -20,25 +22,20 @@ class AI:
     
     def analyze_email(self, email):
         try:
-            model, system = self.load_instructions('config.yaml')
-            self.model = model
-            self.system = system
             response = ollama.chat(
                 model=self.model,
                 messages=[
                     {'role': 'system', 'content': self.system},
-                    {'role': 'user', 'content': f"Subject: {email['subject']}\nFrom: {email['from']}\nDate: {email['date']}\n\n{email['snippet']}"}
+                    {'role': 'user', 'content': f"Subject: {email['subject']}\nFrom: {email['from']}\nDate: {email['date']}\n\""}
                 ]
             )
             response = response['message']['content']
             if "DELETE" in response:
                 return "DELETE"
-            elif "ARCHIVE" in response:
-                return "ARCHIVE"
             elif "KEEP" in response:
                 return "KEEP"
             else:
-                return "KEEP"  # Default to KEEP if the response is unclear
+                return "KEEP" 
             
         except Exception as e:
             print(f"Error occurred while analyzing email: {e}")

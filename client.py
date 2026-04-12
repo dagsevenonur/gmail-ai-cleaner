@@ -25,14 +25,11 @@ class GmailApi:
                 userId="me", 
                 id=msg["id"],
                 format="full",
-                metadataHeaders=["Subject", "From", "Date"]
             ).execute()
             
             headers = detail["payload"]["headers"]
             snippet = detail["snippet"] 
-            payload = detail["payload"]
-            decoded_payload = self.decode_payload(payload)
-            email = {"id": msg["id"], "snippet": snippet, "payload": decoded_payload}
+            email = {"id": msg["id"], "snippet": snippet}
             for header in headers:
                 email[header["name"].lower()] = header["value"]
             
@@ -46,16 +43,6 @@ class GmailApi:
             print(f"Email with ID {email_id} has been trashed.")
         except HttpError as e:            
             print(f"An error occurred while trashing email with ID {email_id}: {e}")
-        
-    def decode_payload(self, payload):
-        if "data" in payload:
-            return urlsafe_b64decode(payload["data"]).decode("utf-8")
-        elif "parts" in payload:
-            for part in payload["parts"]:
-                decoded = self.decode_payload(part)
-                if decoded:
-                    return decoded
-        return None
 
     @staticmethod
     def _execute_request(request):
