@@ -103,4 +103,4 @@ Contributions are welcome! Feel free to open issues or pull requests.
 
 ## 📄 License
 
-MIT License
+Apache 2.0
